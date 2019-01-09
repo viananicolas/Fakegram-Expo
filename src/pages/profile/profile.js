@@ -31,6 +31,7 @@ export default class Profile extends React.Component {
         console.log("Not logged");
       }
     });
+    this.loginUser("nicolas.viana@am4.com.br", "123@mudar");
   };
   async facebookLogin() {
     const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
@@ -103,13 +104,34 @@ export default class Profile extends React.Component {
             </View>
             <View style={profileStyle.container}>
               <Image
-                source={{ uri: "https://api.adorable.io/avatars/2/test@user.i.png" }}
+                source={{
+                  uri: "https://api.adorable.io/avatars/2/test@user.i.png"
+                }}
                 style={profileStyle.profileImage}
               />
               <View style={{ marginRight: 10 }}>
                 <Text>Name</Text>
                 <Text>@username</Text>
               </View>
+            </View>
+            <View style={profileStyle.profileButtonsContainer}>
+              <TouchableOpacity style={profileStyle.profileButton}>
+                <Text style={profileStyle.profileButtonText}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={profileStyle.profileButton}>
+                <Text style={profileStyle.profileButtonText}>Edit Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Upload")}
+                style={profileStyle.profileButtonUpload}
+              >
+                <Text style={profileStyle.profileButtonTextUpload}>
+                  Upload New +
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={profileStyle.bottomContent} >
+            <Text>Loading</Text>
             </View>
           </View>
         ) : (

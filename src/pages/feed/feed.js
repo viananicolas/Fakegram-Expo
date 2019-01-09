@@ -1,5 +1,12 @@
 import React from "react";
-import { FlatList, StyleSheet, Text, View, Image } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity
+} from "react-native";
 import style from "../../styles/styles";
 import feedStyle from "./styles";
 import { f, auth, storage, database } from "../../config/config";
@@ -70,7 +77,8 @@ export default class Feed extends React.Component {
                     url: element.url,
                     caption: element.caption,
                     posted: this.timeConverter(element.posted),
-                    author: user
+                    author: user,
+                    authorId: element.author
                   });
                   this.setState({
                     refresh: false,
@@ -125,7 +133,15 @@ export default class Feed extends React.Component {
               <View key={index} style={feedStyle.feedImageSubContainer}>
                 <View style={feedStyle.feedImageHeaderText}>
                   <Text>{item.posted}</Text>
-                  <Text>@{item.author}</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("User", {
+                        userId: item.authorId
+                      })
+                    }
+                  >
+                    <Text>@{item.author}</Text>
+                  </TouchableOpacity>
                 </View>
                 <View>
                   <Image
@@ -137,9 +153,17 @@ export default class Feed extends React.Component {
                 </View>
                 <View style={feedStyle.feedImageFooterText}>
                   <Text>{item.caption}</Text>
-                  <Text style={feedStyle.feedImageCommentText}>
-                    View Comments
-                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("Comments", {
+                        userId: item.authorId
+                      })
+                    }
+                  >
+                    <Text style={feedStyle.feedImageCommentText}>
+                      [ View Comments ]
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             )}

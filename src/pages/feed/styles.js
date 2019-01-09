@@ -29,6 +29,7 @@ module.exports = StyleSheet.create({
   },
   feedImageCommentText: {
     marginTop: 10,
-    textAlign: "center"
+    textAlign: "center",
+    color: "blue"
   }
 });

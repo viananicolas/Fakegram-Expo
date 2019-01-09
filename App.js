@@ -6,12 +6,18 @@ import {
   TouchableHighlight,
   TextInput
 } from "react-native";
-import { createBottomTabNavigator, createAppContainer } from "react-navigation";
+import {
+  createBottomTabNavigator,
+  createAppContainer,
+  createStackNavigator
+} from "react-navigation";
 import Feed from "./src/pages/feed/feed.js";
 import Profile from "./src/pages/profile/profile.js";
 import Upload from "./src/pages/upload/upload.js";
+import Comments from "./src/pages/comments/comments.js";
+import UserProfile from "./src/pages/userProfile/userProfile.js";
 import MainStyles from "./src/styles/styles";
-const MainStack = createBottomTabNavigator(
+const TabStack = createBottomTabNavigator(
   {
     Feed: { screen: Feed },
     Upload: { screen: Upload },
@@ -19,8 +25,22 @@ const MainStack = createBottomTabNavigator(
   },
   { tabBarOptions: { style: MainStyles.navigation } }
 );
+//const TabNav = createAppContainer(TabStack);
 
-const NavBar = createAppContainer(MainStack);
+const MainStack = createStackNavigator(
+  {
+    Home: { screen: TabStack },
+    User: { screen: UserProfile },
+    Comments: { screen: Comments }
+  },
+  {
+    initialRouteName: "Home",
+    mode: "modal",
+    headerMode: "none"
+  }
+);
+
+const MainNav = createAppContainer(MainStack);
 
 export default class App extends React.Component {
   constructor(props) {
@@ -28,6 +48,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    return <NavBar />;
+    return <MainNav />;
   }
 }
