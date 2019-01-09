@@ -54,7 +54,7 @@ export default class Upload extends React.Component {
             ${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}`;
   };
 
-  getImage = async () => {
+  findNewImage = async () => {
     this._checkPermissions();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "Images",
@@ -70,7 +70,10 @@ export default class Upload extends React.Component {
         uri: result.uri
       });
       console.log(this.state.uri);
-    } else console.log("cancelled");
+    } else {
+      console.log("cancelled");
+      this.setState({ imageSelected: false });
+    }
   };
 
   uploadPublish = () => {
@@ -88,9 +91,8 @@ export default class Upload extends React.Component {
 
   uploadImage = async uri => {
     let imageId = this.state.imageId;
-    // let re = /(?:\.([^.]+))?$/;
-    // let ext = re.exec(uri)[1];
     let ext = uri.split(".").pop();
+    console.log(ext);
     this.setState({
       currentFileType: ext,
       uploading: true
@@ -107,9 +109,8 @@ export default class Upload extends React.Component {
   };
 
   completeUploadBlob = (blob, filePath) => {
-    let imageId = this.state.imageId;
     let userId = this.state.userId;
-    let uploadTask = storage
+    let uploadTask = f.storage()
       .ref(`user/${userId}/img`)
       .child(filePath)
       .put(blob);
@@ -215,7 +216,7 @@ export default class Upload extends React.Component {
                 <Text style={uploadStyle.uploadText}>Upload</Text>
                 <TouchableOpacity
                   style={uploadStyle.photoSelectionContainer}
-                  onPress={() => this.getImage()}
+                  onPress={() => this.findNewImage()}
                 >
                   <Text style={uploadStyle.photoSelectionText}>
                     Select Photo

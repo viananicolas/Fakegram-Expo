@@ -130,8 +130,8 @@ export default class Profile extends React.Component {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={profileStyle.bottomContent} >
-            <Text>Loading</Text>
+            <View style={profileStyle.bottomContent}>
+              <Text>Loading</Text>
             </View>
           </View>
         ) : (
