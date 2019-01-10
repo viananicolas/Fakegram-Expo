@@ -1,15 +1,10 @@
 import React from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity
-} from "react-native";
+import { TextInput, Text, View, Image, TouchableOpacity } from "react-native";
+import { f, auth, storage, database } from "../../config/config";
 import style from "../../styles/styles";
 import profileStyle from "./styles";
-import { f, auth, storage, database } from "../../config/config";
+import PhotoList from "../../components/photoList";
+import UserAuth from "../../components/userAuth";
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -18,20 +13,48 @@ export default class Profile extends React.Component {
       loggedIn: false,
       emailLoginView: false,
       email: "",
-      password: ""
+      password: "",
+      userId: "",
+      username: "",
+      name: "",
+      avatar: "",
+      userId: "",
+      editingProfile: false
     };
   }
+
+  fetchUserInfo = userId => {
+    database
+      .ref("users")
+      .child(userId)
+      .once("value")
+      .then(value => {
+        if (value.val()) {
+          let user = value.val();
+          this.setState({
+            username: user.username,
+            name: user.name,
+            avatar: user.avatar,
+            loggedIn: true,
+            userId: userId
+          });
+        }
+      });
+  };
+
   componentDidMount = () => {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.setState({ loggedIn: true });
+        this.fetchUserInfo(user.uid);
+        //this.setState({ loggedIn: true, userId: user.uid });
         console.log("Logged", user);
       } else {
         this.setState({ loggedIn: false });
         console.log("Not logged");
       }
     });
-    this.loginUser("nicolas.viana@am4.com.br", "123@mudar");
+    // this.loginUser("nicolas.viana@am4.com.br", "123@mudar");
+    //this.registerUser("nicolas.viana@am4.com.br", "123@mudar");
   };
   async facebookLogin() {
     const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
@@ -94,6 +117,26 @@ export default class Profile extends React.Component {
       }
     );
   };
+  editProfile = () => {
+    this.setState({ editingProfile: true });
+  };
+  saveProfile = () => {
+    let name = this.state.name;
+    let username = this.state.username;
+    if (name) {
+      database
+        .ref("users")
+        .child(this.state.userId)
+        .child("name")
+        .set(name);
+      database
+        .ref("users")
+        .child(this.state.userId)
+        .child("username")
+        .set(username);
+      this.setState({ editingProfile: false });
+    }
+  };
   render() {
     return (
       <View style={style.body}>
@@ -105,39 +148,82 @@ export default class Profile extends React.Component {
             <View style={profileStyle.container}>
               <Image
                 source={{
-                  uri: "https://api.adorable.io/avatars/2/test@user.i.png"
+                  uri: this.state.avatar
                 }}
                 style={profileStyle.profileImage}
               />
               <View style={{ marginRight: 10 }}>
-                <Text>Name</Text>
-                <Text>@username</Text>
+                <Text>{this.state.name}</Text>
+                <Text>@{this.state.username}</Text>
               </View>
             </View>
-            <View style={profileStyle.profileButtonsContainer}>
-              <TouchableOpacity style={profileStyle.profileButton}>
-                <Text style={profileStyle.profileButtonText}>Logout</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={profileStyle.profileButton}>
-                <Text style={profileStyle.profileButtonText}>Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("Upload")}
-                style={profileStyle.profileButtonUpload}
-              >
-                <Text style={profileStyle.profileButtonTextUpload}>
-                  Upload New +
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={profileStyle.bottomContent}>
-              <Text>Loading</Text>
-            </View>
+            {this.state.editingProfile ? (
+              <View style={profileStyle.editProfileInputContainer}>
+                <TouchableOpacity
+                  onPress={() => this.setState({ editingProfile: false })}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Cancel</Text>
+                </TouchableOpacity>
+                <Text>Name:</Text>
+                <TextInput
+                  editable={true}
+                  placeholder={"Enter your name"}
+                  onChangeText={text => this.setState({ name: text })}
+                  value={this.state.name}
+                  style={profileStyle.editProfileInput}
+                />
+                <Text>Username:</Text>
+                <TextInput
+                  editable={true}
+                  placeholder={"Enter your username"}
+                  onChangeText={text => this.setState({ username: text })}
+                  value={this.state.username}
+                  style={profileStyle.editProfileInput}
+                />
+                <TouchableOpacity
+                  onPress={() => this.saveProfile()}
+                  style={profileStyle.saveChangesButton}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    Save Changes
+                  </Text>
+                </TouchableOpacity>
+                <Text>Edit profile</Text>
+              </View>
+            ) : (
+              <View style={profileStyle.profileButtonsContainer}>
+                <TouchableOpacity
+                  style={profileStyle.profileButton}
+                  onPress={() => this.signOut()}
+                >
+                  <Text style={profileStyle.profileButtonText}>Logout</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={profileStyle.profileButton}
+                  onPress={() => this.editProfile()}
+                >
+                  <Text style={profileStyle.profileButtonText}>
+                    Edit Profile
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("Upload")}
+                  style={profileStyle.profileButtonUpload}
+                >
+                  <Text style={profileStyle.profileButtonTextUpload}>
+                    Upload New +
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <PhotoList
+              isUser={true}
+              userId={this.state.userId}
+              navigation={this.props.navigation}
+            />
           </View>
         ) : (
-          <View style={profileStyle.loggedOutText}>
-            <Text>Not logged in</Text>
-          </View>
+          <UserAuth message={"Please, login to view your profile"} />
         )}
       </View>
     );

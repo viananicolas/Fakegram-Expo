@@ -52,5 +52,22 @@ module.exports = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "green"
+  },
+  editProfileInputContainer: {
+    alignItems: "center",
+    paddingBottom: 20,
+    justifyContent: "center",
+    borderBottomWidth: 1
+  },
+  editProfileInput: {
+    width: 250,
+    marginVertical: 10,
+    padding: 5,
+    borderColor: "grey",
+    borderWidth: 1
+  },
+  saveChangesButton:{
+    backgroundColor: "blue",
+    padding: 10,  
   }
 });

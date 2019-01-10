@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import style from "../../styles/styles";
 import profileStyle from "./styles";
+import PhotoList from "../../components/photoList";
 import { f, auth, storage, database } from "../../config/config";
 
 export default class UserProfile extends React.Component {
@@ -117,9 +118,7 @@ export default class UserProfile extends React.Component {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={profileStyle.bottomContent}>
-              <Text>Loading</Text>
-            </View>
+            <PhotoList isUser={true} userId={this.state.userId} navigation={this.props.navigation} />
           </View>
         ) : (
           <View style={profileStyle.loggedOutText}>

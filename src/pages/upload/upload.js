@@ -11,6 +11,8 @@ import style from "../../styles/styles";
 import { f, auth, storage, database } from "../../config/config";
 import uploadStyle from "./styles";
 import { Permissions, ImagePicker } from "expo";
+import UserAuth from "../../components/userAuth";
+
 export default class Upload extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +24,8 @@ export default class Upload extends React.Component {
       caption: "",
       uploading: false,
       userId: "",
-      progress: 0
+      progress: 0,
+      currentFileType: ""
     };
   }
   componentDidMount = () => {
@@ -50,8 +53,7 @@ export default class Upload extends React.Component {
   };
 
   uniqueId = () => {
-    return `${this.s4()}${this.s4()}-${this.s4()}-${this.s4()}-
-            ${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}`;
+    return `${this.s4()}${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}-${this.s4()}`;
   };
 
   findNewImage = async () => {
@@ -61,7 +63,6 @@ export default class Upload extends React.Component {
       allowsEditing: true,
       quality: 1
     });
-    console.log(result);
     if (!result.cancelled) {
       //this.uploadImage(result.uri);
       this.setState({
@@ -69,7 +70,6 @@ export default class Upload extends React.Component {
         imageId: this.uniqueId(),
         uri: result.uri
       });
-      console.log(this.state.uri);
     } else {
       console.log("cancelled");
       this.setState({ imageSelected: false });
@@ -92,12 +92,12 @@ export default class Upload extends React.Component {
   uploadImage = async uri => {
     let imageId = this.state.imageId;
     let ext = uri.split(".").pop();
-    console.log(ext);
     this.setState({
       currentFileType: ext,
       uploading: true
     });
-    let filePath = `${imageId}.${this.state.currentFileType}`;
+    let filePath = `${imageId}.${ext}`;
+    console.log(filePath);
     const xmlHttpRequest = new XMLHttpRequest();
     xmlHttpRequest.open("GET", uri, true);
     xmlHttpRequest.responseType = "blob";
@@ -110,10 +110,10 @@ export default class Upload extends React.Component {
 
   completeUploadBlob = (blob, filePath) => {
     let userId = this.state.userId;
-    let uploadTask = f.storage()
+    let uploadTask = storage
       .ref(`user/${userId}/img`)
       .child(filePath)
-      .put(blob);
+      .put(blob, { contentType: "application/octet-stream" });
     uploadTask.on(
       "state_changed",
       snapshot => {
@@ -126,6 +126,7 @@ export default class Upload extends React.Component {
       },
       error => {
         console.log(error);
+        //this.setState({})
       },
       () => {
         this.setState({ progress: 100 });
@@ -168,7 +169,7 @@ export default class Upload extends React.Component {
     return (
       <View style={style.body}>
         {this.state.loggedIn ? (
-          <View style={style.info}>
+          <View style={style.body}>
             {this.state.imageSelected ? (
               <View style={style.body}>
                 <View style={style.topBar}>
@@ -227,9 +228,7 @@ export default class Upload extends React.Component {
             )}
           </View>
         ) : (
-          <View style={style.info}>
-            <Text>Not logged in</Text>
-          </View>
+          <UserAuth message={"Please, login to upload a photo"} />
         )}
       </View>
     );

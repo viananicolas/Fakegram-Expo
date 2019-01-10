@@ -35,5 +35,60 @@ module.exports = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  loggedOutText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  loginContainer: {
+    marginVertical: 20,
+    flexDirection: "row"
+  },
+  loginContainer2: {
+    marginVertical: 20
+  },
+  loginButtonText: {
+    fontWeight: "bold",
+    color: "green"
+  },
+  signUpButtonText: {
+    fontWeight: "bold",
+    color: "blue"
+  },
+  separatorAuthButtons: {
+    marginHorizontal: 10
+  },
+  cancelContainer: {
+    borderBottomWidth: 1,
+    paddingVertical: 5,
+    marginBottom: 10,
+    borderBottomColor: "black"
+  },
+  cancelText: {
+    fontWeight: "bold"
+  },
+  loginStepText: {
+    fontWeight: "bold",
+    marginBottom: 20
+  },
+  loginInput: {
+    width: 250,
+    marginVertical: 10,
+    padding: 5,
+    borderColor: "grey",
+    borderRadius: 10,
+    borderWidth: 1
+  },
+  loginButton: {
+    backgroundColor: "green",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  loginSubmitText: {
+    color: "white",
+    alignItems: "center",
+    justifyContent: "center",
   }
 });
